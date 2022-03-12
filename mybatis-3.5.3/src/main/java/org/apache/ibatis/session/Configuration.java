@@ -144,13 +144,17 @@ public class Configuration {
    */
   protected Class<?> configurationFactory;
 
+  // 有个knownMappers属性挺重要的
+  // addMapper()
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+  // 拦截器链路 <plugin>节点导入
   protected final InterceptorChain interceptorChain = new InterceptorChain();
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
   // 类型别名注册器 TypeAliasRegistry构造函数会注册一些， Configuration构造函数会注册一些
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
   protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+  // 将select|insert|update|delete这些节点信息封装进来
   protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection")
       .conflictMessageProducer((savedValue, targetValue) ->
           ". please check " + savedValue.getResource() + " and " + targetValue.getResource());
@@ -159,7 +163,9 @@ public class Configuration {
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
 
+  // 将已经解析过的resource资源存进来
   protected final Set<String> loadedResources = new HashSet<>();
+  // <sql>节点
   protected final Map<String, XNode> sqlFragments = new StrictMap<>("XML fragments parsed from previous mappers");
 
   protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<>();

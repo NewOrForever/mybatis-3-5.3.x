@@ -65,6 +65,20 @@ public class XMLScriptBuilder extends BaseBuilder {
 
   public SqlSource parseScriptNode() {
     /**
+     * SqlNode
+     *    MixedSqlNode
+     *    StaticTextSqlNode
+     *    TextSqlNode
+     *    ForEachSqlNode
+     *    IfSqlNode
+     *    VarDeclSqlNode
+     *    TrimSqlNode
+     *        WhereSqlNode
+     *        SetSqlNode
+     *    ChooseSqlNode
+     */
+
+    /**
      * 递归解析-组合设计模式  selectById这个sql元素会解析成
      *    1层  MixedSqlNode <SELECT>
      *    2层  WhereSqlNode <WHERE>
@@ -72,6 +86,17 @@ public class XMLScriptBuilder extends BaseBuilder {
      *       test="条件表达式"
      *
      *  contexts= sql语句分： 1.TextSqlNode 带${}   2.StaticTextSqlNode
+     *
+     *  举个例子吧：
+     *      <select id="selectById" resultMap="result" >
+     *         select id,user_name,create_time from t_user
+     *         <where>
+     *             <if test="id > 0">
+     *                 and id=#{id}
+     *             </if>
+     *         </where>
+     *     </select>
+     *
      */
     MixedSqlNode rootSqlNode = parseDynamicTags(context);
     SqlSource sqlSource;
