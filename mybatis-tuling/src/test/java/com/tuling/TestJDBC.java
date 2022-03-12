@@ -21,13 +21,13 @@ public class TestJDBC {
 
             // 2.创建连接
             conn= DriverManager.   // SPI
-                    getConnection("jdbc:mysql://localhost:3306/mybatis_example", "root", "123456");
+                    getConnection("jdbc:mysql://localhost:3306/boot_user", "root", "root");
 
             // 开启事务
             conn.setAutoCommit(false);
 
             // SQL语句  参数#{}  ${}  <if>
-            String sql="  select id,user_name,create_time from   t_user where id=?;";
+            String sql="  select * from   users where id=?;";
 
             // 获得sql执行者  ：
             // 1. 执行预处理
@@ -42,9 +42,9 @@ public class TestJDBC {
 
             rs.next();
             User user =new User();
-            user.setId(rs.getLong("id"));
-            user.setUserName(rs.getString("user_name"));
-            user.setCreateTime(rs.getDate("create_time"));
+            user.setId(rs.getInt("id"));
+            user.setUsername(rs.getString("username"));
+            user.setCreate_time(rs.getTimestamp("create_time"));
             System.out.println(user.toString());
 
             pstmt=conn.prepareStatement(sql);
@@ -78,7 +78,7 @@ public class TestJDBC {
     public void testII(){
         BaseDao baseDao = new BaseDao();
         // 3个查询条件  1   2   3
-        User user = baseDao.executeJavaBean("select id,user_name,create_time from t_user where id=?", User.class, 1);
+        User user = baseDao.executeJavaBean("select * from users where id=?", User.class, 1);
 
         System.out.println(user);
     }
@@ -93,13 +93,13 @@ public class TestJDBC {
 
             // 2.创建连接
             conn= DriverManager.   // SPI
-                    getConnection("jdbc:mysql://localhost:3306/mybatis_example?useServerPrepStmts=true&cachePrepStmts=true", "root", "123456");
+                    getConnection("jdbc:mysql://localhost:3306/boot_user?useServerPrepStmts=true&cachePrepStmts=true", "root", "root");
 
             // 开启事务
             conn.setAutoCommit(false);
 
             // SQL语句  参数#{}  ${}  <if>
-            String sql="  select id,user_name,create_time from  t_user where id=?;";
+            String sql="  select * from  users where id=?;";
 
             // 获得sql执行者  ：
             // 1.预编译（需数据库支持,MySQl默认已关闭）
@@ -117,9 +117,9 @@ public class TestJDBC {
 
                     rs.next();
                     User user = new User();
-                    user.setId(rs.getLong("id"));
-                    user.setUserName(rs.getString("user_name"));
-                    user.setCreateTime(rs.getDate("create_time"));
+                    user.setId(rs.getInt("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setCreate_time(rs.getTimestamp("create_time"));
                     System.out.println(user.toString());
                 }
             }
@@ -135,9 +135,9 @@ public class TestJDBC {
 
                     rs.next();
                     User user = new User();
-                    user.setId(rs.getLong("id"));
-                    user.setUserName(rs.getString("user_name"));
-                    user.setCreateTime(rs.getDate("create_time"));
+                    user.setId(rs.getInt("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setCreate_time(rs.getTimestamp("create_time"));
                     System.out.println(user.toString());
                 }
             }

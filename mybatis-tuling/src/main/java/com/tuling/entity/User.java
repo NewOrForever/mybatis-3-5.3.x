@@ -1,6 +1,7 @@
 package com.tuling.entity;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /***
@@ -9,42 +10,81 @@ import java.util.Date;
  */
 public class User implements Serializable{
 
-    private Long id ;
-    private String userName ;
-    private Date createTime;
+    private Integer id ;
+    private String username ;
+    private String password;
+    private Integer sex;
+    private Integer deleted;
+    private Timestamp create_time;
+    private Timestamp update_time;
 
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
+    public Integer getSex() {
+        return sex;
+    }
+
+    public void setSex(Integer sex) {
+        this.sex = sex;
+    }
+
+    public Integer getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
+    }
+
+    public Timestamp getCreate_time() {
+        return create_time;
+    }
+
+    public void setCreate_time(Timestamp create_time) {
+        this.create_time = create_time;
+    }
+
+    public Timestamp getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Timestamp update_time) {
+        this.update_time = update_time;
+    }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", createTime=" + createTime +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", sex=" + sex +
+                ", deleted=" + deleted +
+                ", create_time=" + create_time +
+                ", update_time=" + update_time +
                 '}';
     }
 }

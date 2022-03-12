@@ -35,7 +35,7 @@ public class App {
            /* UserMapper mapper = session.getMapper(UserMapper.class);
             System.out.println(mapper.getClass());
             User user = mapper.selectById(1);*/
-            System.out.println(user.getUserName());
+            System.out.println(user.getUsername());
 
             session.commit();
         } catch (Exception e) {

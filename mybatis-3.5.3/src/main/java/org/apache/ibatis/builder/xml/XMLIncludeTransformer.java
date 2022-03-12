@@ -78,7 +78,6 @@ public class XMLIncludeTransformer {
       // <sql>.getParentNode()=select  , 移除select中的<sql> Node 。
       //  不知道为什么不直接replaceChild呢？还做2步 先插再删，
       toInclude.getParentNode().removeChild(toInclude);
-      int i=0;
     } else if (source.getNodeType() == Node.ELEMENT_NODE) { // 0 // <sql>
       if (included && !variablesContext.isEmpty()) {
         // replace variables in attribute values
