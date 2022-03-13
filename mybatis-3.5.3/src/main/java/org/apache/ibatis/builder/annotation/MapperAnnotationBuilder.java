@@ -128,6 +128,7 @@ public class MapperAnnotationBuilder {
     // 是否已经解析mapper接口对应的xml
     if (!configuration.isResourceLoaded(resource)) {
       // 根据mapper接口名获取 xml文件并解析，  解析<mapper></mapper>里面所有东西放到configuration
+      // 注解解析也是要去先解析mapper.xml
       loadXmlResource();
       // 添加已解析的标记
       configuration.addLoadedResource(resource);

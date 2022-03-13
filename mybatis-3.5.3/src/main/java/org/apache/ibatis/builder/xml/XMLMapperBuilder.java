@@ -112,9 +112,16 @@ public class XMLMapperBuilder extends BaseBuilder {
        */
         configuration.addLoadedResource(resource);
 
+      /**
+       * 会在这里去addMapper()
+       * 进入注解解析的流程
+       */
       bindMapperForNamespace();
     }
 
+    /**
+     * 清楚因为异常没有解析完成的数据
+     */
     parsePendingResultMaps();
     parsePendingCacheRefs();
     parsePendingStatements();

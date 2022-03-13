@@ -97,7 +97,19 @@ public class XMLScriptBuilder extends BaseBuilder {
      *         </where>
      *     </select>
      *
+     *     MixedSqlNode 						  - select
+     * 	    StaticTextSqlNode 		    - select节点文本
+     * 	    WhereSqlNode 					    - wheresqlnode
+     * 		    MixedSqlNode 				    - where(Mixed)
+     * 			    StaticTextSqlNode 		- where节点空文本
+     * 			    IfSqlNode 				    - ifsqlnode
+     * 				    MixedSqlNode 		    - if(Mixed)
+     * 					    StaticSqlNode 	  - if节点文本
+     * 			    StaticSqlNode         - where节点空文本
+     * 	    StaticTextSqlNode         - select节点空文本
+     *
      */
+    // 当子节点的类型是ELEMENT时会去递归执行parseDynamicTags该方法直到最后没有ELEMENT节点
     MixedSqlNode rootSqlNode = parseDynamicTags(context);
     SqlSource sqlSource;
     if (isDynamic) {
