@@ -314,6 +314,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .lang(lang)
         .resultOrdered(resultOrdered)
         .resultSets(resultSets)
+      /**
+       * 合并resultMap和resultMap（封装到到一个ResultMap中）添加到一个新的List<ResultMap>中
+       */
         .resultMaps(getStatementResultMaps(resultMap, resultType, id))
         .resultSetType(resultSetType)
         .flushCacheRequired(valueOrDefault(flushCache, !isSelect))
@@ -383,10 +386,14 @@ public class MapperBuilderAssistant extends BaseBuilder {
       String resultMap,
       Class<?> resultType,
       String statementId) {
+    // 拼接上namespace
     resultMap = applyCurrentNamespace(resultMap, true);
 
     List<ResultMap> resultMaps = new ArrayList<>();
     if (resultMap != null) {
+      /**
+       * resultMap看来可以设置多个，以逗号分割
+       */
       String[] resultMapNames = resultMap.split(",");
       for (String resultMapName : resultMapNames) {
         try {
@@ -396,6 +403,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
         }
       }
     } else if (resultType != null) {
+      /**
+       * resultMap数据封装到ResultMap中
+       */
       ResultMap inlineResultMap = new ResultMap.Builder(
           configuration,
           statementId + "-Inline",

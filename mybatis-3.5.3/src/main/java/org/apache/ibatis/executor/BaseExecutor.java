@@ -181,7 +181,7 @@ public abstract class BaseExecutor implements Executor {
         //处理存过的
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
-        // 获得不到，则从数据库中查询
+        // 一级缓存中也没有，则从数据库中查询
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
@@ -360,6 +360,7 @@ public abstract class BaseExecutor implements Executor {
     // 先占一个缓存位置（看不懂）
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
+      // 真的要去数据库找了啊
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
       // 删掉占着的缓存位置
