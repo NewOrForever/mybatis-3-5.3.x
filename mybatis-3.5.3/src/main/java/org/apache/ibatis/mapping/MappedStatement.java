@@ -44,7 +44,7 @@ public final class MappedStatement {
   private Cache cache;//缓存
   private ParameterMap parameterMap;
   private List<ResultMap> resultMaps;
-  private boolean flushCacheRequired;
+  private boolean flushCacheRequired; // select|insert|update|delete的flushCache属性
   private boolean useCache;//是否使用缓存，默认为true
   private boolean resultOrdered;//结果是否排序
   private SqlCommandType sqlCommandType;//sql语句的类型，如select、update、delete、insert

@@ -38,7 +38,9 @@ import org.apache.ibatis.transaction.Transaction;
  */
 public class CachingExecutor implements Executor {
 
+  // BaseExecutor
   private final Executor delegate;
+  // 事务缓存管理器（暂存器）
   private final TransactionalCacheManager tcm = new TransactionalCacheManager();
 
   public CachingExecutor(Executor delegate) {
@@ -114,12 +116,14 @@ public class CachingExecutor implements Executor {
      * 判断是否配置了<cache></cache>
      */
     if (cache != null) {
-      //判断是否需要刷新缓存
+      // 判断是否需要刷新缓存
+      // 刷新缓存那你就得去查库啊
       flushCacheIfRequired(ms);
       if (ms.isUseCache() && resultHandler == null) {
         ensureNoOutParams(ms, boundSql);
         /**
          * 先去二级缓存中获取
+         * TransactionalCacheManager：事务缓存管理器（暂存器）
          */
         @SuppressWarnings("unchecked")
         List<E> list = (List<E>) tcm.getObject(cache, key);
@@ -127,9 +131,11 @@ public class CachingExecutor implements Executor {
          * 二级缓存中没有获取到
          */
         if (list == null) {
-          //通过查询数据库去查询
+          // 通过查询数据库去查询
+          // delegate：BaseExecutor
           list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-          //加入到二级缓存中
+          // 加入到二级缓存中
+          // 先添加到暂存器中，在sqlsession提交的时候二级缓存中
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;
@@ -193,6 +199,7 @@ public class CachingExecutor implements Executor {
 
   private void flushCacheIfRequired(MappedStatement ms) {
     Cache cache = ms.getCache();
+    // 判断是否配置了flushCache=true,若配置了清空暂存区
     if (cache != null && ms.isFlushCacheRequired()) {
       tcm.clear(cache);
     }

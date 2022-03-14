@@ -64,11 +64,15 @@ public class TransactionalCache implements Cache {
   @Override
   public Object getObject(Object key) {
     // issue #116
+    // 查询二级缓存
     Object object = delegate.getObject(key);
     if (object == null) {
+      // 为空也是为了先设置一个值防止缓存穿透
       entriesMissedInCache.add(key);
     }
     // issue #146
+    // crud节点属性flushCache设置为true时
+    // 判断暂存区清空标识是否为true，若为true直接返回null重新查询数据库防止脏读
     if (clearOnCommit) {
       return null;
     } else {

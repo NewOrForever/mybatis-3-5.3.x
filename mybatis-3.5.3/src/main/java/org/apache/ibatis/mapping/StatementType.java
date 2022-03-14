@@ -19,5 +19,6 @@ package org.apache.ibatis.mapping;
  * @author Clinton Begin
  */
 public enum StatementType {
+  // CALLABLE：存储过程
   STATEMENT, PREPARED, CALLABLE
 }

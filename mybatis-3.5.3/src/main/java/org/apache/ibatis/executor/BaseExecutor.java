@@ -295,7 +295,7 @@ public abstract class BaseExecutor implements Executor {
   }
 
   /**
-   * 清楚本地一级缓存
+   * 清除本地一级缓存（SqlSession级别的缓存）
    */
   @Override
   public void clearLocalCache() {
@@ -357,12 +357,15 @@ public abstract class BaseExecutor implements Executor {
 
   private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     List<E> list;
+    // 先占一个缓存位置（看不懂）
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
+      // 删掉占着的缓存位置
       localCache.removeObject(key);
     }
+    // 添加到一级缓存
     localCache.putObject(key, list);
     if (ms.getStatementType() == StatementType.CALLABLE) {
       localOutputParameterCache.putObject(key, parameter);

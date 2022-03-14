@@ -155,6 +155,7 @@ public class DefaultSqlSession implements SqlSession {
   /**
    * 查询我们的集合
    * @param statement 用于去匹配我们Configuration对象中的mappedStatment对象
+   *                    - namespace+sql_id：com.tuling.mapper.UserMapper.selectById
    * @param parameter 调用的参数对象
    * @param <E>
    * @return
@@ -179,14 +180,15 @@ public class DefaultSqlSession implements SqlSession {
     try {
       /**
        * 第一步：通过我们的statement去我们的全局配置类中获取MappedStatement
-       *
+       * 解析的insert|select|update|delete这些节点信息都是放在MappedStatement中的
        * CRUD
        */
       MappedStatement ms = configuration.getMappedStatement(statement);
       /**
        * 通过执行器去执行我们的sql对象
        * 第一步:包装我们的集合类参数
-       * 第二步:一般情况下是executor为cacheExetory对象
+       * 第二步:一般情况下是executor为cachingExetory对象
+       *    - 一般情况下是CachingExecutor因为cacheEnable属性默认是true，当在mybatis.xml的setting中配置为false那么才是BaseExecutor的子类（默认是SimpleExecutor）
        */
       return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
     } catch (Exception e) {
@@ -369,18 +371,30 @@ public class DefaultSqlSession implements SqlSession {
    * @date:2019/9/9 20:36
    */
   private Object wrapCollection(final Object object) {
+    /**
+     * 如果参数类型是集合或数组，那么会将参数包装成一个Map
+     * 思考：如果传进来的参数类型是Map，不用包装，那么在<foreach>的collection属性值就是key值
+     */
+
     //若我们的参数类型是Collection
     if (object instanceof Collection) {
       StrictMap<Object> map = new StrictMap<>();
       //把他key为collection存放到map中
       map.put("collection", object);
       //若我们参数类型是list类型  把key为list作为集合存放到map中
+      /**
+       * 所以当参数类型是List的时候map会存两组数据，key分别为collection和list
+       * 使用<foreach>的时候如果参数类型是List那么collection的属性值可以是collection（这个没测试，不过应该是这样的）或list
+       */
       if (object instanceof List) {
         map.put("list", object);
       }
       return map;
     } else if (object != null && object.getClass().isArray()) {
       //若是数组，存放key为array的map中
+      /**
+       * <foreach>的collection属性值是array
+       */
       StrictMap<Object> map = new StrictMap<>();
       map.put("array", object);
       return map;

@@ -24,13 +24,16 @@ package org.apache.ibatis.session;
 */
 public class RowBounds {
   /* 默认offset是0**/
+  // 不分页
   public static final int NO_ROW_OFFSET = 0;
   /* 默认Limit是int的最大值，因此它使用的是逻辑分页**/
+  // 没有行数限制
   public static final int NO_ROW_LIMIT = Integer.MAX_VALUE;
+  // 默认不分页显示全部数据
   public static final RowBounds DEFAULT = new RowBounds();
 
-  private final int offset;
-  private final int limit;
+  private final int offset; // 页数
+  private final int limit;   // 每页行数
 
   public RowBounds() {
     this.offset = NO_ROW_OFFSET;
