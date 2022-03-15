@@ -26,6 +26,7 @@ import org.apache.ibatis.session.Configuration;
 public class DynamicSqlSource implements SqlSource {
 
   private final Configuration configuration;
+  // 这个rootSqlNode使用了责任链 + 装饰的模式，里面包装了一层又一层的SqlNode
   private final SqlNode rootSqlNode;
 
   public DynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
@@ -44,11 +45,14 @@ public class DynamicSqlSource implements SqlSource {
   public BoundSql getBoundSql(Object parameterObject) {
     DynamicContext context = new DynamicContext(configuration, parameterObject);
     // 1归 责任链 处理一个个SqlNode   编译出一个完整sql
+    // 递归：先执行外层SqlNode的再执行里面的SqlNode，一层一层这样来执行的
+    // 最终的sql会拼接到context的StringJoiner中
     rootSqlNode.apply(context);
     SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
     // 2.接下来处理 处理sql中的#{...}
     Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
     // 怎么处理呢？ 很简单， 就是拿到#{}中的内容 封装为parameterMapper，  替换成?
+    // 返回的时StaticSqlSource
     SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     context.getBindings().forEach(boundSql::setAdditionalParameter);

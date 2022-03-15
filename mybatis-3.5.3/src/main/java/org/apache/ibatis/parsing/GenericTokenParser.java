@@ -36,6 +36,7 @@ public class GenericTokenParser {
       return "";
     }
     // search open token
+    // #{ 位置
     int start = text.indexOf(openToken);
     if (start == -1) {
       return text;
@@ -56,8 +57,11 @@ public class GenericTokenParser {
         } else {
           expression.setLength(0);
         }
+        // select * from user where id = #{id}  ->  select * from user where id =
         builder.append(src, offset, start - offset);
+        // #{ 结束位置
         offset = start + openToken.length();
+        // } 位置
         int end = text.indexOf(closeToken, offset);
         while (end > -1) {
           if (end > offset && src[end - 1] == '\\') {
@@ -66,6 +70,7 @@ public class GenericTokenParser {
             offset = end + closeToken.length();
             end = text.indexOf(closeToken, offset);
           } else {
+            // 拿到#{id}中的id
             expression.append(src, offset, end - offset);
             break;
           }
@@ -76,10 +81,14 @@ public class GenericTokenParser {
           offset = src.length;
         } else {
           // 返回?  解析参数ParameterMapping 和参数的类型处理器
+          // select * from user where id = ?
           builder.append(handler.handleToken(expression.toString()));
+          // 一个#{}解析完成，结束位置
           offset = end + closeToken.length();
         }
       }
+      // 解析下一个#{}
+      // 上一个#{}开始的 #{ 位置
       start = text.indexOf(openToken, offset);
     }
     if (offset < src.length) {

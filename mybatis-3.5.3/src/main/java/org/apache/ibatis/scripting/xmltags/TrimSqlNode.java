@@ -51,6 +51,7 @@ public class TrimSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    // 解析到的sql放入sqlBuffer属性中
     FilteredDynamicContext filteredDynamicContext = new FilteredDynamicContext(context);
     // 递归trim(where\set) 中的内容
     boolean result = contents.apply(filteredDynamicContext);

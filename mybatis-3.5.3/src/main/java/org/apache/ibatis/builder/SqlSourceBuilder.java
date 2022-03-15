@@ -40,6 +40,9 @@ public class SqlSourceBuilder extends BaseBuilder {
   }
 
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+    /**
+     * additionalParameters会用来创建一个MetaObject：ObjectWrapper，ObjectFactory，ReflectorFactory这些属性
+     */
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
     // 替换sql中的#{}  替换成问号， 并且会顺便拿到#{}中的参数名解析成ParameterMapping

@@ -94,6 +94,7 @@ public class CachingExecutor implements Executor {
     /**
      * 通过参数对象解析我们的sql详细信息1339025938:1570540512:com.tuling.mapper.selectById:0:2147483647:select id,user_name,create_time from t_user where id=?:1:development
      */
+    // 构建BoundSql，sql语句以及参数信息都存在这里了
     BoundSql boundSql = ms.getBoundSql(parameterObject);
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
