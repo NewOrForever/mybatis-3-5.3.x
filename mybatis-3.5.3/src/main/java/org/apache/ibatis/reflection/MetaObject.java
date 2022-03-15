@@ -137,6 +137,8 @@ public class MetaObject {
       }
       metaValue.setValue(prop.getChildren(), value);
     } else {
+      // 属性赋值
+      // BeanWrapper
       objectWrapper.set(prop, value);
     }
   }

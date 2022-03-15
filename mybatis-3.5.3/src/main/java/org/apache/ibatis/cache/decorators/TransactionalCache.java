@@ -100,6 +100,7 @@ public class TransactionalCache implements Cache {
     if (clearOnCommit) {
       delegate.clear();
     }
+    // 从暂存器中拿出来真正的去添加到二级缓存
     flushPendingEntries();
     reset();
   }
@@ -119,6 +120,7 @@ public class TransactionalCache implements Cache {
     for (Map.Entry<Object, Object> entry : entriesToAddOnCommit.entrySet()) {
       delegate.putObject(entry.getKey(), entry.getValue());
     }
+    // 空值防止缓存击穿的
     for (Object entry : entriesMissedInCache) {
       if (!entriesToAddOnCommit.containsKey(entry)) {
         delegate.putObject(entry, null);

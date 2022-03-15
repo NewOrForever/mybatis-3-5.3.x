@@ -96,6 +96,7 @@ public class CachingExecutor implements Executor {
      */
     // 构建BoundSql，sql语句以及参数信息都存在这里了
     BoundSql boundSql = ms.getBoundSql(parameterObject);
+    // 缓存的key
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
@@ -200,7 +201,7 @@ public class CachingExecutor implements Executor {
 
   private void flushCacheIfRequired(MappedStatement ms) {
     Cache cache = ms.getCache();
-    // 判断是否配置了flushCache=true,若配置了清空暂存区
+    // 判断是否配置了flushCache=true（crud节点有该属性）,若配置了清空暂存区
     if (cache != null && ms.isFlushCacheRequired()) {
       tcm.clear(cache);
     }

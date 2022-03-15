@@ -41,6 +41,7 @@ public class TransactionalCacheManager {
 
   public void commit() {
     for (TransactionalCache txCache : transactionalCaches.values()) {
+      // 暂存器 -> 二级缓存
       txCache.commit();
     }
   }

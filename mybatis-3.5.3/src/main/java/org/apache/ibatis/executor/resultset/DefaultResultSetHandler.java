@@ -191,7 +191,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     validateResultMapsCount(rsw, resultMapCount);
     while (rsw != null && resultMapCount > resultSetCount) {
       ResultMap resultMap = resultMaps.get(resultSetCount);
-      handleResultSet(rsw, resultMap, multipleResults, null);//根据resultMap处理rsw生成java对象
+      /**
+       * 根据resultMap处理rsw生成java对象
+       */
+      handleResultSet(rsw, resultMap, multipleResults, null);
       rsw = getNextResultSet(stmt); //获取结果集的下一个结果
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
@@ -299,6 +302,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       } else {
         if (resultHandler == null) {
           DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
+          // 处理结果集
           handleRowValues(rsw, resultMap, defaultResultHandler, rowBounds, null);
           multipleResults.add(defaultResultHandler.getResultList());
         } else {
@@ -326,6 +330,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       checkResultHandler();
       handleRowValuesForNestedResultMap(rsw, resultMap, resultHandler, rowBounds, parentMapping);
     } else {
+      // 看简单的
       handleRowValuesForSimpleResultMap(rsw, resultMap, resultHandler, rowBounds, parentMapping);
     }
   }
@@ -352,7 +357,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     skipRows(resultSet, rowBounds);
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
+      // 一行数据
       Object rowValue = getRowValue(rsw, discriminatedResultMap, null);
+      // 添加到list
       storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
     }
   }
@@ -361,6 +368,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     if (parentMapping != null) {
       linkToParents(rs, parentMapping, rowValue);
     } else {
+      // rowValue -> list
       callResultHandler(resultHandler, resultContext, rowValue);
     }
   }
@@ -368,6 +376,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   @SuppressWarnings("unchecked" /* because ResultHandler<?> is always ResultHandler<Object>*/)
   private void callResultHandler(ResultHandler<?> resultHandler, DefaultResultContext<Object> resultContext, Object rowValue) {
     resultContext.nextResultObject(rowValue);
+    // DefaultResultHandler，添加java对象到list
     ((ResultHandler<Object>) resultHandler).handleResult(resultContext);
   }
 
@@ -395,7 +404,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap, String columnPrefix) throws SQLException {
     final ResultLoaderMap lazyLoader = new ResultLoaderMap();
-    // 通过resultMap或resultType获得 空对象
+    // 通过resultMap或resultType获得 空对象（没有属性赋值）
     Object rowValue = createResultObject(rsw, resultMap, lazyLoader, columnPrefix);
     if (rowValue != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
       final MetaObject metaObject = configuration.newMetaObject(rowValue);
@@ -458,6 +467,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         }
         if (value != null || (configuration.isCallSettersOnNulls() && !metaObject.getSetterType(property).isPrimitive())) {
           // gcode issue #377, call setter on nulls (value is not 'found')
+          // 属性赋值
           metaObject.setValue(property, value);
         }
       }
@@ -475,6 +485,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     } else {   // 直接调用类型处理器获取数据了
       final TypeHandler<?> typeHandler = propertyMapping.getTypeHandler();
       final String column = prependPrefix(propertyMapping.getColumn(), columnPrefix);
+      // 从结果集中拿数据
+      // rs.getInt("column")
       return typeHandler.getResult(rs, column);
     }
   }
@@ -594,6 +606,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     this.useConstructorMappings = false; // reset previous mapping result
     final List<Class<?>> constructorArgTypes = new ArrayList<>();
     final List<Object> constructorArgs = new ArrayList<>();
+    // 拿到空对象
     Object resultObject = createResultObject(rsw, resultMap, constructorArgTypes, constructorArgs, columnPrefix);
     if (resultObject != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
       final List<ResultMapping> propertyMappings = resultMap.getPropertyResultMappings();
@@ -619,6 +632,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     } else if (!constructorMappings.isEmpty()) {
       return createParameterizedResultObject(rsw, resultType, constructorMappings, constructorArgTypes, constructorArgs, columnPrefix);
     } else if (resultType.isInterface() || metaType.hasDefaultConstructor()) {
+      // DefaultObjectFactory中根据反射new一个instance（空对象）
       return objectFactory.create(resultType);
     } else if (shouldApplyAutomaticMappings(resultMap, false)) {
       return createByConstructorSignature(rsw, resultType, constructorArgTypes, constructorArgs);

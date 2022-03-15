@@ -77,6 +77,7 @@ public class DefaultParameterHandler implements ParameterHandler {
             value = parameterObject;
           } else {
             // 一般情况是个POJO，  需要根据属性名通过反射拿到对象中的属性值
+            // 元数据：getter/setter
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
             value = metaObject.getValue(propertyName);
           }

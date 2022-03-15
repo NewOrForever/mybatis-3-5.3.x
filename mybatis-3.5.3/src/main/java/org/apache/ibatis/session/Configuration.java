@@ -605,6 +605,9 @@ public class Configuration {
   }
 
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+    /**
+     * 包装了真正的StatementHandler
+     */
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     /**
      * 执行拦截器
@@ -637,7 +640,7 @@ public class Configuration {
     if (ExecutorType.BATCH == executorType) {
       executor = new BatchExecutor(this, transaction);
     } else if (ExecutorType.REUSE == executorType) {
-      //可重复使用的执行器
+      //可重复使用的执行器（基本没用，因为有一级缓存可以公用SqlSession）
       executor = new ReuseExecutor(this, transaction);
     } else {
       //简单的sql执行器对象
@@ -651,6 +654,10 @@ public class Configuration {
     /**
      * TODO:调用所有的拦截器对象plugin方法
      * 插件： 责任链+ 装饰器模式（动态代理）
+     * 两个Inteceptor：第二个的代理对象的target是第一次生成的动态代理对象
+     *  SecondPluginProxy --------------------- 执行进入SecondPlugin的intercet方法
+     *   target: PluginProxy ------------------ 执行进入MyPlugin的intercept方法
+     *               target: Executor --------- 执行Eeecutor的query方法
      */
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
