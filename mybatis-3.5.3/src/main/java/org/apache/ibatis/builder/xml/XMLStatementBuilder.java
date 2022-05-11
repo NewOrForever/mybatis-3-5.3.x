@@ -77,6 +77,7 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     /**
      * 匹配当前的数据库厂商id是否匹配当前数据源的厂商id
+     * 也会去判断要不要解析该节点
      */
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
       return;
@@ -302,14 +303,24 @@ public class XMLStatementBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * @param id                      节点id
+   * @param databaseId              节点databaseId
+   * @param requiredDatabaseId      数据库厂商id
+   * @return
+   */
   private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
+    // 全局配置文件配置了数据库厂商id，则需要节点的databaseId属性的值要一致
     if (requiredDatabaseId != null) {
       return requiredDatabaseId.equals(databaseId);
     }
+    // 没配置数据库厂商id则节点的databaseId属性不要设置
     if (databaseId != null) {
       return false;
     }
+    // id -> namespace.id
     id = builderAssistant.applyCurrentNamespace(id, false);
+    // 该statement（select|insert|update|delete）节点未解析过
     if (!this.configuration.hasStatement(id, false)) {
       return true;
     }

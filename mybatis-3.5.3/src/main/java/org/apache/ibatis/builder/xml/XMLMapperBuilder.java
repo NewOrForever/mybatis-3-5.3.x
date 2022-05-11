@@ -104,15 +104,15 @@ public class XMLMapperBuilder extends BaseBuilder {
      */
     if (!configuration.isResourceLoaded(resource)) {
       /**
+       * UserMapper.xml
        * 真正的解析我们的 <mapper namespace="com.tuling.mapper.EmployeeMapper">
-       *
        */
       configurationElement(parser.evalNode("/mapper"));
       /**
        * 把资源保存到我们Configuration中
        * Configuration.loadedResources.addLoadResource
        */
-        configuration.addLoadedResource(resource);
+      configuration.addLoadedResource(resource);
 
       /**
        * 会在这里去addMapper()
@@ -176,7 +176,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       /**
        * 解析我们的resultMap节点
-       * 解析到：org.apache.ibatis.session.Configuration#resultMaps
+       * 解析到：org.apache.ibatis.session.Configuration#resultMaps （key：namespace.resultMapId）
        *    异常 org.apache.ibatis.session.Configuration#incompleteResultMaps
        *
        */
@@ -185,7 +185,7 @@ public class XMLMapperBuilder extends BaseBuilder {
        * 解析我们通过sql片段
        *  解析到org.apache.ibatis.builder.xml.XMLMapperBuilder#sqlFragments
        *   其实等于 org.apache.ibatis.session.Configuration#sqlFragments
-       *   因为他们是同一引用，在构建XMLMapperBuilder 时把Configuration.getSqlFragments传进去了
+       *   因为他们是同一引用，在构建XMLMapperBuilder时把Configuration.getSqlFragments传进去了
        */
       sqlElement(context.evalNodes("/mapper/sql"));
       /**
@@ -200,7 +200,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list) {
     /**
-     * 判断有没有配置数据库厂商ID
+     * 判断有没有配置数据库厂商ID - 实际就是数据库产品的名称比如：mysql
      */
     if (configuration.getDatabaseId() != null) {
       buildStatementFromContext(list, configuration.getDatabaseId());
@@ -224,10 +224,14 @@ public class XMLMapperBuilder extends BaseBuilder {
      */
     for (XNode context : list) {
       /**
+       * XmlConfigBuilder -> 解析全局配置文件
+       * XmlMapperBuilder -> 解析mapper.xml
+       * XmlStatementBuiler -> 解析select|insert|update|delete节点
        * 创建一个xmlStatement的构建器对象
        */
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
+        // Configuration.mappedStatements.put(节点Id, mappedStatement)
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteStatement(statementParser);
@@ -437,7 +441,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
     try {
-      // 解析到configuration中
+      // 一个<resultMap>解析成一个ResultMap对象 -> 添加到configuration.resultMaps属性中
       return resultMapResolver.resolve();
     } catch (IncompleteElementException  e) {
       configuration.addIncompleteResultMap(resultMapResolver);
@@ -489,12 +493,14 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void sqlElement(List<XNode> list) {
     if (configuration.getDatabaseId() != null) {
+      // 数据库产品名称 - mysql
       sqlElement(list, configuration.getDatabaseId());
     }
     sqlElement(list, null);
   }
 
   private void sqlElement(List<XNode> list, String requiredDatabaseId) {
+    // <sql>
     for (XNode context : list) {
       String databaseId = context.getStringAttribute("databaseId");
       String id = context.getStringAttribute("id");
@@ -511,9 +517,11 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (requiredDatabaseId != null) {
       return requiredDatabaseId.equals(databaseId);
     }
+    // requireDatabaseId为空 - 没设置数据库厂商，如果<sql databaseId="xxx">则直接返回false
     if (databaseId != null) {
       return false;
     }
+    // 这个sql节点的id没有解析过
     if (!this.sqlFragments.containsKey(id)) {
       return true;
     }

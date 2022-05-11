@@ -194,7 +194,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
       Discriminator discriminator,
       List<ResultMapping> resultMappings,
       Boolean autoMapping) {
+    // resultMapId -> namespace.resultMapId
     id = applyCurrentNamespace(id, false);
+    // namespace.parentResultMapId -> namespace.parentResultMapId
+    // parentResultMapId -> namespace.parentResultMapId
     extend = applyCurrentNamespace(extend, true);
 
     /**
@@ -225,6 +228,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       if (declaresConstructor) {
         extendedResultMappings.removeIf(resultMapping -> resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR));
       }
+      // extendResultMappings已经删过resultMappings了，所以resultMappings添加的是自己没有的resultMapping
       resultMappings.addAll(extendedResultMappings);
     }
     ResultMap resultMap = new ResultMap.Builder(configuration, id, type, resultMappings, autoMapping)

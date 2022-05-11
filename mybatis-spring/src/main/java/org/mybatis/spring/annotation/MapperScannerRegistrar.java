@@ -15,6 +15,7 @@
  */
 package org.mybatis.spring.annotation;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,9 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -78,9 +82,9 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
    */
   /**
    * 方法实现说明:spring ioc在解析我们的住配置类的时候,会解析@MapperScann注解,然后 调用registerBeanDefinitions方法来进行注册我们的bean定义信息
-   * 
+   *
    * @author:xsls
-   * @param importingClassMetadata
+   * @param importingClassMetadata - APPConfig
    *          :主配置类的信息(包含了class信息)
    * @param registry
    *          bean定义注册器
@@ -200,7 +204,7 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 
   /**
    * 方法实现说明:生成我们bean定义的名称
-   * 
+   *
    * @author:xsls
    * @param importingClassMetadata
    *          传入的配置类

@@ -43,6 +43,15 @@ public class XMLIncludeTransformer {
     this.builderAssistant = builderAssistant;
   }
 
+  /**
+   * 解析<include>
+   *  <select id="selectSqlNode" resultMap="userResult">
+   *         select
+   *         <include refid="sqlFragmentId" />
+   *         from users
+   *  </select>
+   * @param source
+   */
   public void applyIncludes(Node source) {
     Properties variablesContext = new Properties();
     // 拿到之前配置文件解析的<properties>
@@ -60,7 +69,7 @@ public class XMLIncludeTransformer {
    */
   private void applyIncludes(Node source, final Properties variablesContext, boolean included) {
     if (source.getNodeName().equals("include")) {
-      // 拿到之前解析的<sql>
+      // 拿到<include>的refid对应的<sql>
       Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);
       // variablesContext和<include>中的<property>合并起来
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
@@ -78,7 +87,7 @@ public class XMLIncludeTransformer {
       // <sql>.getParentNode()=select  , 移除select中的<sql> Node 。
       //  不知道为什么不直接replaceChild呢？还做2步 先插再删，
       toInclude.getParentNode().removeChild(toInclude);
-    } else if (source.getNodeType() == Node.ELEMENT_NODE) { // 0 // <sql>
+    } else if (source.getNodeType() == Node.ELEMENT_NODE) { // 0 - <select>
       if (included && !variablesContext.isEmpty()) {
         // replace variables in attribute values
         NamedNodeMap attributes = source.getAttributes();
@@ -87,7 +96,7 @@ public class XMLIncludeTransformer {
           attr.setNodeValue(PropertyParser.parse(attr.getNodeValue(), variablesContext));
         }
       }
-      NodeList children = source.getChildNodes(); // <sql>子节点
+      NodeList children = source.getChildNodes(); // <text><include><text>
       for (int i = 0; i < children.getLength(); i++) {
         // 递归 <sql>子节点中又包括了<include>
          applyIncludes(children.item(i), variablesContext, included);
