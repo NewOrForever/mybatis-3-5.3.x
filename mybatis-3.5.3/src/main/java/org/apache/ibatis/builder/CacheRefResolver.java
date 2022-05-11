@@ -26,6 +26,7 @@ public class CacheRefResolver {
 
   public CacheRefResolver(MapperBuilderAssistant assistant, String cacheRefNamespace) {
     this.assistant = assistant;
+    // 引用的namespace
     this.cacheRefNamespace = cacheRefNamespace;
   }
 

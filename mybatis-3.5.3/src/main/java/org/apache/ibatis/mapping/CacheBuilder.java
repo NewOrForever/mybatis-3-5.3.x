@@ -90,15 +90,20 @@ public class CacheBuilder {
   }
 
   public Cache build() {
+    // implementation -> PerpetualCache.class
+    // decorators -> LruCache.class
     setDefaultImplementations();
+    // PerpetualCache ---> 这个后续要用缓存的话一层层装饰给剥开到最里面
     Cache cache = newBaseCacheInstance(implementation, id);
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches 不将装饰器应用到自定义缓存
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
         cache = newCacheDecoratorInstance(decorator, cache);
+        // <property>
         setCacheProperties(cache);
       }
+      // 装饰+责任链模式 ---> 不断的向下委托
       cache = setStandardDecorators(cache);
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
       cache = new LoggingCache(cache);
@@ -209,6 +214,7 @@ public class CacheBuilder {
     Constructor<? extends Cache> cacheConstructor = getCacheDecoratorConstructor(cacheClass);
     try {
       //  通过构造器反射得到实例和 （包装PerpetualCache）
+      // new LRUCache(PerpetualCache)
       return cacheConstructor.newInstance(base);
     } catch (Exception e) {
       throw new CacheException("Could not instantiate cache decorator (" + cacheClass + "). Cause: " + e, e);

@@ -302,6 +302,7 @@ public class XNode {
   }
 
   public Properties getChildrenAsProperties() {
+    // 解析<Property>子节点
     Properties properties = new Properties();
     for (XNode child : getChildren()) {
       String name = child.getStringAttribute("name");

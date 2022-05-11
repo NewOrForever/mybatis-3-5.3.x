@@ -100,6 +100,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   public void parse() {
     /**
      * 判断当前的Mapper是否被加载过
+     * sq：加载过了的话直接用Configuration就行了不需要再去解析了
      */
     if (!configuration.isResourceLoaded(resource)) {
       /**
@@ -109,6 +110,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       configurationElement(parser.evalNode("/mapper"));
       /**
        * 把资源保存到我们Configuration中
+       * Configuration.loadedResources.addLoadResource
        */
         configuration.addLoadedResource(resource);
 
@@ -427,6 +429,8 @@ public class XMLMapperBuilder extends BaseBuilder {
         resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
       }
     }
+
+    // <resultMap id="xxx">
     String id = resultMapNode.getStringAttribute("id",
             resultMapNode.getValueBasedIdentifier());
     String extend = resultMapNode.getStringAttribute("extends");
@@ -523,11 +527,14 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (flags.contains(ResultFlag.CONSTRUCTOR)) {
       property = context.getStringAttribute("name");
     } else {
+      // <id property="id">
+      // <result property="username">
       property = context.getStringAttribute("property");
     }
     String column = context.getStringAttribute("column");
     String javaType = context.getStringAttribute("javaType");
     String jdbcType = context.getStringAttribute("jdbcType");
+    // 这个嵌套方式使用可以参考一下官方文档
     String nestedSelect = context.getStringAttribute("select");
     String nestedResultMap = context.getStringAttribute("resultMap",
         processNestedResultMappings(context, Collections.emptyList(), resultType));
@@ -536,6 +543,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     String typeHandler = context.getStringAttribute("typeHandler");
     String resultSet = context.getStringAttribute("resultSet");
     String foreignColumn = context.getStringAttribute("foreignColumn");
+    // 开启懒加载
     boolean lazy = "lazy".equals(context.getStringAttribute("fetchType", configuration.isLazyLoadingEnabled() ? "lazy" : "eager"));
     Class<?> javaTypeClass = resolveClass(javaType);
     Class<? extends TypeHandler<?>> typeHandlerClass = resolveClass(typeHandler);

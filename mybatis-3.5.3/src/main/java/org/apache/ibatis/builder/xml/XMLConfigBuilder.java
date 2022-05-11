@@ -115,6 +115,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   public Configuration parse() {
     /**
      * 若已经解析过了 就抛出异常
+     * 创建XmlConfigBuilder对象的时候parsed赋值为false -> 一旦执行parse方法，那么就会给parsed这个属性赋值为true
      */
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
@@ -204,7 +205,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
       /**
        * 可以配置  一般不会去设置
-       * 对象工厂 用于反射实例化对象、对象包装工厂、
+       * 对象工厂 用于反射实例化对象、对象包装工厂
        * 反射工厂 用于属性和setter/getter 获取
        */
       objectFactoryElement(root.evalNode("objectFactory"));
@@ -397,6 +398,8 @@ public class XMLConfigBuilder extends BaseBuilder {
       } else if (url != null) {
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
+
+      // 新的老的合并起来
       Properties vars = configuration.getVariables();
       if (vars != null) {
         defaults.putAll(vars);
@@ -449,6 +452,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           Environment.Builder environmentBuilder = new Environment.Builder(id)
               .transactionFactory(txFactory)
               .dataSource(dataSource);
+          // configuration设置environment -> environment主要就是三个属性id, 事务, datasource
           configuration.setEnvironment(environmentBuilder.build());
         }
       }
@@ -478,6 +482,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (context != null) {
       String type = context.getStringAttribute("type");  // JDBC
       Properties props = context.getChildrenAsProperties();
+      // 有注册别名则在里面找，没有则直接class.forName
       TransactionFactory factory = (TransactionFactory) resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(props);
       return factory;
@@ -574,6 +579,8 @@ public class XMLConfigBuilder extends BaseBuilder {
             InputStream inputStream = Resources.getResourceAsStream(resource);
             /**
              * 创建读取XmlMapper构建器对象,用于来解析我们的mapper.xml文件
+             * 每个<mapper>子节点都会去new 一个mapper解析器
+             * sqlFragment在这里传入configuration的，这样就指向了同一个sqlFragment
              */
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
             /**

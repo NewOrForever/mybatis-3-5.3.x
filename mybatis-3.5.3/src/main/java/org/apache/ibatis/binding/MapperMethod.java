@@ -131,8 +131,10 @@ public class MapperMethod {
            * 在mybatis和spring整合的时候，我们偷天换日了我们mapper接口包下的所有的
            * beandefinition改成了MapperFactoryBean类型的
            * MapperFactoryBean<T> extends SqlSessionDaoSupport的类实现了SqlSessionDaoSupport
-           * 那么就会调用他的setXXX方法为我们的sqlSessionTemplate赋值
+           * 那么就会调用他的setXXX方法为我们的sqlSessionTemplate赋值 ---> 这么说我觉得是有点问题的额：sqlSessionTemplate是可以单独通过
+           * set方法注入进来，但是在这里应该是在setSqlSessionFactory的时候去创建的代理对象
            *
+           *  sqlSessionTemplate.selectOne -> sqlSessionProxy.selectOne -> 代理逻辑 -> DefaultSqlSession.selectOne
            */
           result = sqlSession.selectOne(command.getName(), param);
           if (method.returnsOptional()

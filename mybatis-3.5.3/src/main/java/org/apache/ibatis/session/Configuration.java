@@ -684,6 +684,7 @@ public class Configuration {
   }
 
   public void addCache(Cache cache) {
+    // delegate.getId()一层层剥开拿最里面的那个cache的id
     caches.put(cache.getId(), cache);
   }
 

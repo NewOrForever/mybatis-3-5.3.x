@@ -3,7 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <!--properties 扫描属性文件.properties  -->
-    <properties resource="db.properties"></properties>
+    <properties resource="db.properties">
+<!--        <property name="" value=""/>-->
+    </properties>
 
 
     <settings>

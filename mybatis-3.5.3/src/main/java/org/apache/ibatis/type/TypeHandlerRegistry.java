@@ -54,8 +54,10 @@ import org.apache.ibatis.io.Resources;
 public final class TypeHandlerRegistry {
 
   private final Map<JdbcType, TypeHandler<?>>  jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
+  // <javatype, Map<jdbctype, typehandler>>
   private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
   private final TypeHandler<Object> unknownTypeHandler = new UnknownTypeHandler(this);
+  // Map<typehandler.class, typehandler>
   private final Map<Class<?>, TypeHandler<?>> allTypeHandlersMap = new HashMap<>();
 
   private static final Map<JdbcType, TypeHandler<?>> NULL_TYPE_HANDLER_MAP = Collections.emptyMap();
@@ -352,10 +354,12 @@ public final class TypeHandlerRegistry {
       for (JdbcType handledJdbcType : mappedJdbcTypes.value()) {
         register(javaType, handledJdbcType, typeHandler);
       }
+      // 注解该属性为true
       if (mappedJdbcTypes.includeNullJdbcType()) {
         register(javaType, null, typeHandler);
       }
     } else {
+      // typehandler没有@MappedJdbcTypes注解
       register(javaType, null, typeHandler);
     }
   }
@@ -371,6 +375,7 @@ public final class TypeHandlerRegistry {
   }
 
   private void register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) {
+    // javaType为空的话typeHandlerMap不添加
     if (javaType != null) {
       Map<JdbcType, TypeHandler<?>> map = typeHandlerMap.get(javaType);
       if (map == null || map == NULL_TYPE_HANDLER_MAP) {
@@ -379,6 +384,7 @@ public final class TypeHandlerRegistry {
       }
       map.put(jdbcType, handler);
     }
+    // 不管javatype有没有这个map都会添加数据的
     allTypeHandlersMap.put(handler.getClass(), handler);
   }
 
@@ -397,6 +403,7 @@ public final class TypeHandlerRegistry {
         mappedTypeFound = true;
       }
     }
+    // 没有指定javatype
     if (!mappedTypeFound) {
       register(getInstance(null, typeHandlerClass));
     }

@@ -19,7 +19,9 @@ import static org.springframework.util.Assert.notNull;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.support.DaoSupport;
 
 /**
@@ -76,6 +78,8 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
     return new SqlSessionTemplate(sqlSessionFactory);
   }
 
+
+
   /**
    * Return the MyBatis SqlSessionFactory used by this DAO.
    *
@@ -122,7 +126,7 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
 
   /**
    * 方法实现说明:用于检查我们类的属性sqlSessionFactory,sqlSessionTemplate是否为空
-   * 
+   *
    * @author:xsls
    * @return:
    * @exception:

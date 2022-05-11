@@ -137,6 +137,7 @@ public class ResultMapping {
       resultMapping.flags = Collections.unmodifiableList(resultMapping.flags);
       resultMapping.composites = Collections.unmodifiableList(resultMapping.composites);
       // 假如没有指定typeHandler属性，那么会在这里进行解析TypeHandler  根据 javaType和jdbcType就可以找到
+      // Map<javatype, Map<jdbctype, typehandler>>
       resolveTypeHandler();
       validate();
       return resultMapping;

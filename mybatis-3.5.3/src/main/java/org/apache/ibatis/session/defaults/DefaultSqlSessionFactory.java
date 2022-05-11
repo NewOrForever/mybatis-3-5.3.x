@@ -124,7 +124,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
        * 创建一个sql执行器对象
        * 一般情况下 若我们的mybaits的全局配置文件的cacheEnabled默认为ture就返回
        * 一个cachingExecutor,若关闭的话返回的就是一个SimpleExecutor
-       * CachingExevutor包装了BaseExecutor
+       * CachingExecutor包装了BaseExecutor
        */
       final Executor executor = configuration.newExecutor(tx, execType);
       /**

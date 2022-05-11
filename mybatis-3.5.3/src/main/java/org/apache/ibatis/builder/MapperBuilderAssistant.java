@@ -124,6 +124,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       unresolvedCacheRef = true;
       Cache cache = configuration.getCache(namespace);
       if (cache == null) {
+        // 引用的namespace没有缓存则抛异常
         throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
       }
       currentCache = cache;
@@ -489,9 +490,16 @@ public class MapperBuilderAssistant extends BaseBuilder {
   }
 
   private Class<?> resolveResultJavaType(Class<?> resultType, String property, Class<?> javaType) {
+    /**
+     *  <resultMap id="userResult" type="org.example.entity.User">
+     *         <result column="username" jdbcType="VARCHAR" property="username"/>
+     *  </resultMap>
+     *  javaType没指定 -> 自动会通过type类型setter方法来确定该属性的javatype
+     */
     if (javaType == null && property != null) {
       try {
         MetaClass metaResultType = MetaClass.forClass(resultType, configuration.getReflectorFactory());
+        // User类的username属性 -> String
         javaType = metaResultType.getSetterType(property);
       } catch (Exception e) {
         //ignore, following null check statement will deal with the situation

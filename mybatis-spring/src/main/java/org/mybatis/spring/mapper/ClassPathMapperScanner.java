@@ -225,7 +225,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
     for (BeanDefinitionHolder holder : beanDefinitions) {
       // 获取我们的bean定义
       definition = (GenericBeanDefinition) holder.getBeanDefinition();
-      // 获取我们的bean定义的名称
+      // 获取我们的bean定义的名称 -> UserMapper.class
       String beanClassName = definition.getBeanClassName();
       LOGGER.debug(() -> "Creating MapperFactoryBean with name '" + holder.getBeanName() + "' and '" + beanClassName
           + "' mapperInterface");
