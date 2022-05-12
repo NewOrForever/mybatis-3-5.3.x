@@ -148,6 +148,8 @@ public class XMLStatementBuilder extends BaseBuilder {
     // Parse selectKey after includes and remove them.
     /**
      * 解析我们<insert 语句的的selectKey节点, 一般在oracle里面设置自增id
+     * configuration.addKeyGenerator(id, new SelectKeyGenerator(keyStatement, executeBefore))
+     * -  这里使用的是NoKeyGenerator.INSTANCE
      */
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
@@ -190,7 +192,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     /**
      * 通过class org.apache.ibatis.scripting.xmltags.XMLLanguageDriver来解析我们的
      * sql脚本对象  .  解析SqlNode. 注意， 只是解析成一个个的SqlNode， 并不会完全解析sql,因为这个时候参数都没确定，动态sql无法解析
-     * 使用了组合设计模式
+     * 使用了组合设计模式 - 这个解析比较重要，后续执行的时候解析sql就是拿设置对象来进行解析
      */
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     /**
@@ -256,8 +258,10 @@ public class XMLStatementBuilder extends BaseBuilder {
 
   private void parseSelectKeyNodes(String parentId, List<XNode> list, Class<?> parameterTypeClass, LanguageDriver langDriver, String skRequiredDatabaseId) {
     for (XNode nodeToHandle : list) {
+      // insertId -> insertId!selectKey
       String id = parentId + SelectKeyGenerator.SELECT_KEY_SUFFIX;
       String databaseId = nodeToHandle.getStringAttribute("databaseId");
+      // namespace.insertId!selectKey
       if (databaseIdMatchesCurrent(id, databaseId, skRequiredDatabaseId)) {
         parseSelectKeyNode(id, nodeToHandle, parameterTypeClass, langDriver, databaseId);
       }

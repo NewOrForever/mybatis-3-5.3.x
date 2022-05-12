@@ -320,7 +320,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .resultOrdered(resultOrdered)
         .resultSets(resultSets)
       /**
-       * 合并resultMap和resultMap（封装到到一个ResultMap中）添加到一个新的List<ResultMap>中
+       * resultMap和resultType只能使用一个，以resultMap优先
        */
         .resultMaps(getStatementResultMaps(resultMap, resultType, id))
         .resultSetType(resultSetType)
@@ -330,6 +330,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
     /**
      * 处理我们的paramMap和parameterType
+     * 两个不能同时使用，同时有的话优先使用parameterMap（但是mybatis不推荐使用parameterMap这种方式了）
      */
     ParameterMap statementParameterMap = getStatementParameterMap(parameterMap, parameterType, id);
     if (statementParameterMap != null) {
@@ -391,13 +392,15 @@ public class MapperBuilderAssistant extends BaseBuilder {
       String resultMap,
       Class<?> resultType,
       String statementId) {
-    // 拼接上namespace
+    // 拼接上namespace ------ namespace.resultMapId
     resultMap = applyCurrentNamespace(resultMap, true);
 
     List<ResultMap> resultMaps = new ArrayList<>();
     if (resultMap != null) {
       /**
        * resultMap看来可以设置多个，以逗号分割
+       * <select id="selectById" resultMap="userResult,roleResult" >
+       * </select>
        */
       String[] resultMapNames = resultMap.split(",");
       for (String resultMapName : resultMapNames) {

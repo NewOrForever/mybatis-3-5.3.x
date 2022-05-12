@@ -110,7 +110,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       configurationElement(parser.evalNode("/mapper"));
       /**
        * 把资源保存到我们Configuration中
-       * Configuration.loadedResources.addLoadResource
+       * Configuration.loadedResources.add(org/example/mapper/UserMapper.xml)
        */
       configuration.addLoadedResource(resource);
 
@@ -122,7 +122,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
 
     /**
-     * 清楚因为异常没有解析完成的数据
+     * 清除因为异常没有解析完成的数据（会再解析一次，如果还是失败就missing）
      */
     parsePendingResultMaps();
     parsePendingCacheRefs();
@@ -231,7 +231,8 @@ public class XMLMapperBuilder extends BaseBuilder {
        */
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
-        // Configuration.mappedStatements.put(节点Id, mappedStatement)
+        // Configuration.mappedStatements.put(namespace.节点Id, mappedStatement)
+        // 最终会将节点信息解析到MappedStatement对象中去 ---> 添加到Configuration
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteStatement(statementParser);
@@ -589,15 +590,19 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (namespace != null) {
       Class<?> boundType = null;
       try {
+        // UserMapper.class
         boundType = Resources.classForName(namespace);
       } catch (ClassNotFoundException e) {
         //ignore, bound type is not required
       }
+      // namespace不是UserMapper的限定名 -> boundType为空 -> 这个判断就进不去
+      // 是UserMapper限定名 -> addLoadedResource，后面流程就不需要再去解析xml了 -> addMapper
       if (boundType != null) {
         if (!configuration.hasMapper(boundType)) {
           // Spring may not know the real resource name so we set a flag
           // to prevent loading again this resource from the mapper interface
           // look at MapperAnnotationBuilder#loadXmlResource
+          // namespace:com.tuling.mapper.UserMapper
           configuration.addLoadedResource("namespace:" + namespace);
           configuration.addMapper(boundType);
         }

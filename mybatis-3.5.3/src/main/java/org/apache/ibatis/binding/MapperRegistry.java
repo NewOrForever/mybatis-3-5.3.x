@@ -94,6 +94,7 @@ public class MapperRegistry {
   public <T> void addMapper(Class<T> type) {
     /**
      * 判断我们传入进来的type类型是不是接口
+     * UserMapper
      */
     if (type.isInterface()) {
       /**
@@ -105,7 +106,7 @@ public class MapperRegistry {
       boolean loadCompleted = false;
       try {
         /**
-         * 创建一个MapperProxyFactory 把我们的Mapper接口保存到工厂类中， 该工厂用于创建 MapperProxy
+         * 创建一个MapperProxyFactory 把我们的Mapper接口保存到工厂类中， 该工厂用于创建UserMapper的代理对象 - spring整合的时候就需要的
          */
         knownMappers.put(type, new MapperProxyFactory<>(type));
         // It's important that the type is added before the parser is run
@@ -119,6 +120,7 @@ public class MapperRegistry {
         loadCompleted = true;
       } finally {
         if (!loadCompleted) {
+          // 没解析成功则从注册中心map中删掉
           knownMappers.remove(type);
         }
       }

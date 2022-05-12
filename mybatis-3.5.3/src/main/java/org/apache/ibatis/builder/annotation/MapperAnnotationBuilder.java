@@ -124,6 +124,7 @@ public class MapperAnnotationBuilder {
   }
 
   public void parse() {
+    // UserMapper限定名
     String resource = type.toString();
     // 是否已经解析mapper接口对应的xml
     if (!configuration.isResourceLoaded(resource)) {

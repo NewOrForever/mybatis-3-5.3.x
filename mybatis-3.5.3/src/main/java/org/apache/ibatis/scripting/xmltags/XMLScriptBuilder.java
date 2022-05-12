@@ -105,7 +105,7 @@ public class XMLScriptBuilder extends BaseBuilder {
      * 			    IfSqlNode 				    - ifsqlnode
      * 				    MixedSqlNode 		    - if(Mixed)
      * 					    StaticSqlNode 	  - if节点文本
-     * 			    StaticSqlNode         - where节点空文本
+     * 			    StaticTextSqlNode         - where节点空文本
      * 	    StaticTextSqlNode         - select节点空文本
      *
      */
@@ -120,6 +120,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     } else {
       // 静态Sql源  如果没有动态标签(<if>、<where>等) 以及 没有${}  就是静态Sql源
       // 静态Sql 就是在这里就解析了Sql  和参数ParameterMappings   后续执行就不用解析了
+      // RawSqlSource维护了一个StaticSqlSource
       sqlSource = new RawSqlSource(configuration, rootSqlNode, parameterType);
     }
     // 其实他们的区别就是动态sql 需要在查询的时候解析 因为有动态sql 和拼接${}
@@ -129,9 +130,9 @@ public class XMLScriptBuilder extends BaseBuilder {
   // 解析${} 和 动态节点
   protected MixedSqlNode parseDynamicTags(XNode node) {
     List<SqlNode> contents = new ArrayList<>();
-    NodeList children = node.getNode().getChildNodes();  //获得<select>的子节点
+    NodeList children = node.getNode().getChildNodes();  // 获得<select>的子节点
     for (int i = 0; i < children.getLength(); i++) {
-      XNode child = node.newXNode(children.item(i));
+      XNode child = node.newXNode(children.item(i));        // 创建子节点Node
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
         String data = child.getStringBody(""); // 获得sql文本
         TextSqlNode textSqlNode = new TextSqlNode(data);
@@ -150,7 +151,7 @@ public class XMLScriptBuilder extends BaseBuilder {
           throw new BuilderException("Unknown element <" + nodeName + "> in SQL statement.");
         }
         handler.handleNode(child, contents);  // 不同动态节点有不用的实现
-        isDynamic = true;     // 怎样算Dynamic? 其实就是判断sql文本动态sql节点
+        isDynamic = true;     // 怎样算Dynamic? 子节点是if、where ... 这些标签
       }
     }
     return new MixedSqlNode(contents);

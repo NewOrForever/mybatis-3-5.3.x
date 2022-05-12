@@ -99,6 +99,11 @@ public class TextSqlNode implements SqlNode {
       return isDynamic;
     }
 
+    /**
+     * sql文本中有${}那么就会进来设置为动态sql
+     * @param content
+     * @return
+     */
     @Override
     public String handleToken(String content) {
       this.isDynamic = true;

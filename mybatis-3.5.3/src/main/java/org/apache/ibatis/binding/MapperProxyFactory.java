@@ -24,6 +24,7 @@ import org.apache.ibatis.session.SqlSession;
 
 /**
  * @author Lasse Voss
+ * 创建UserMapper的代理对象
  */
 public class MapperProxyFactory<T> {
 
