@@ -134,6 +134,10 @@ public class TrimSqlNode implements SqlNode {
     }
 
     private void applyPrefix(StringBuilder sql, String trimmedUppercaseSql) {
+      /**
+       * 先删再加
+       */
+
       if (!prefixApplied) {
         prefixApplied = true;
         //1.去除开头的AND或OR.

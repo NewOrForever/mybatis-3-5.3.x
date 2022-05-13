@@ -43,13 +43,16 @@ public class DynamicContext {
   private int uniqueNumber = 0;
 
   public DynamicContext(Configuration configuration, Object parameterObject) {
+    // Collection和Array这些不都包装成Map了么
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = configuration.newMetaObject(parameterObject);
       boolean existsTypeHandler = configuration.getTypeHandlerRegistry().hasTypeHandler(parameterObject.getClass());
+      // 最后都封装进ContextMap中
       bindings = new ContextMap(metaObject, existsTypeHandler);
     } else {
       bindings = new ContextMap(null, false);
     }
+    // 参数对象放进Map
     bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
     bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
   }

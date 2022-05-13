@@ -657,8 +657,8 @@ public class Configuration {
      * 插件： 责任链+ 装饰器模式（动态代理）
      * 两个Inteceptor：第二个的代理对象的target是第一次生成的动态代理对象
      *  SecondPluginProxy --------------------- 执行进入SecondPlugin的intercet方法
-     *   target: PluginProxy ------------------ 执行进入MyPlugin的intercept方法
-     *               target: Executor --------- 执行Eeecutor的query方法
+     *      target: PluginProxy ----------------------- 执行进入MyPlugin的intercept方法
+     *               target: Executor ------------------------- 执行Executor的query方法
      */
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;

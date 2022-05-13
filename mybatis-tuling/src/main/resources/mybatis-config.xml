@@ -7,7 +7,6 @@
 <!--        <property name="" value=""/>-->
     </properties>
 
-
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>

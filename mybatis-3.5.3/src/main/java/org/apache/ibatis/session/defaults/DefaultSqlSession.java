@@ -86,7 +86,7 @@ public class DefaultSqlSession implements SqlSession {
      * 这里selectOne调用也是调用selectList方法
      */
     List<T> list = this.selectList(statement, parameter);
-    //若查询出来有且有一个一个对象，直接返回要给
+    //若查询出来有且有一个一个对象，直接返回
     if (list.size() == 1) {
       return list.get(0);
     } else if (list.size() > 1) {
@@ -185,9 +185,9 @@ public class DefaultSqlSession implements SqlSession {
        */
       MappedStatement ms = configuration.getMappedStatement(statement);
       /**
-       * 通过执行器去执行我们的sql对象
-       * 第一步:包装我们的集合类参数
-       * 第二步:一般情况下是executor为cachingExetory对象
+       * 通过执行器（当配置了plugin去拦截Executor那么Executor是jdk代理对象）去执行我们的sql对象
+       * 第一步: 包装我们的集合类参数，Map还是Map，Collection和Array包装成Map
+       * 第二步: 一般情况下是executor为cachingExetory对象
        *    - 一般情况下是CachingExecutor因为cacheEnable属性默认是true，当在mybatis.xml的setting中配置为false那么才是BaseExecutor的子类（默认是SimpleExecutor）
        */
       return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);

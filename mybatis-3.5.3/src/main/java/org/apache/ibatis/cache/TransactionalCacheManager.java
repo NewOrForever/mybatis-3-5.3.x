@@ -25,9 +25,11 @@ import org.apache.ibatis.cache.decorators.TransactionalCache;
  */
 public class TransactionalCacheManager {
 
+  // Map<每个mapper的cache, 暂存区>
   private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap<>();
 
   public void clear(Cache cache) {
+    // 暂存器clear
     getTransactionalCache(cache).clear();
   }
 
@@ -53,7 +55,7 @@ public class TransactionalCacheManager {
   }
 
   private TransactionalCache getTransactionalCache(Cache cache) {
-    // () -> new TransactionalCache<>();
+    // () -> new TransactionalCache<>(cache);
     return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
   }
 

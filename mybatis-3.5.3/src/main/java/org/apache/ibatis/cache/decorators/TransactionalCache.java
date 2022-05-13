@@ -25,7 +25,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
- * The 2nd level cache transactional buffer.
+ * The 2nd level cache transactional buffer.  ---> 二级缓存暂存区
  * <p>
  * This class holds all cache entries that are to be added to the 2nd level cache during a Session.
  * Entries are sent to the cache when commit is called or discarded if the Session is rolled back.
@@ -41,6 +41,7 @@ public class TransactionalCache implements Cache {
 
   private final Cache delegate;
   private boolean clearOnCommit;
+  // 缓存数据存放的地方 ---> 看命名就知道要再commit的时候真正的填充的二级缓存中
   private final Map<Object, Object> entriesToAddOnCommit;
   private final Set<Object> entriesMissedInCache;
 

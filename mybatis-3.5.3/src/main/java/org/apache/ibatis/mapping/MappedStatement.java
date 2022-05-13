@@ -44,7 +44,7 @@ public final class MappedStatement {
   private Cache cache;//缓存
   private ParameterMap parameterMap;
   private List<ResultMap> resultMaps;
-  private boolean flushCacheRequired; // select|insert|update|delete的flushCache属性
+  private boolean flushCacheRequired; // select|insert|update|delete的flushCache属性，没配置的话：<select>默认true，否则false
   private boolean useCache;//是否使用缓存，默认为true
   private boolean resultOrdered;//结果是否排序
   private SqlCommandType sqlCommandType;//sql语句的类型，如select、update、delete、insert
@@ -294,7 +294,9 @@ public final class MappedStatement {
   }
 
   public BoundSql getBoundSql(Object parameterObject) {
-    // 构建BoundSql
+    // 构建BoundSql - 解析select|update|insert|delete时构建的SqlSource是RawSqlSource或是DynamicSqlSource
+    // RawSqlSource比较方便直接拿sql就行替换?
+    // DynamicSqlSource需要解析SqlNode
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings == null || parameterMappings.isEmpty()) {

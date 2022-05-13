@@ -121,10 +121,12 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
       /**
-       * 创建一个sql执行器对象
+       * 创建一个sql执行器对象 - 如果配置了plugin则这里返回的是Executor的代理对象
        * 一般情况下 若我们的mybaits的全局配置文件的cacheEnabled默认为ture就返回
        * 一个cachingExecutor,若关闭的话返回的就是一个SimpleExecutor
-       * CachingExecutor包装了BaseExecutor
+       * CachingExecutor
+       *  - 包装了BaseExecutor
+       *  - 维护了一个缓存管理器对象
        */
       final Executor executor = configuration.newExecutor(tx, execType);
       /**

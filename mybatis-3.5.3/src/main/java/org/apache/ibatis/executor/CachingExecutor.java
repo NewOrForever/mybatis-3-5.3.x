@@ -118,7 +118,7 @@ public class CachingExecutor implements Executor {
      * 判断是否配置了<cache></cache>
      */
     if (cache != null) {
-      // 判断是否需要刷新缓存
+      // 判断是否需要刷新缓存 - 会设置一个清理标识
       // 刷新缓存那你就得去查库啊
       flushCacheIfRequired(ms);
       if (ms.isUseCache() && resultHandler == null) {
@@ -126,6 +126,7 @@ public class CachingExecutor implements Executor {
         /**
          * 先去二级缓存中获取
          * TransactionalCacheManager：事务缓存管理器（暂存器）
+         * 清理标识为true的话则返回null -> 需要去查库
          */
         @SuppressWarnings("unchecked")
         List<E> list = (List<E>) tcm.getObject(cache, key);
@@ -137,7 +138,7 @@ public class CachingExecutor implements Executor {
           // delegate：BaseExecutor
           list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
           // 加入到二级缓存中
-          // 先添加到暂存器中，在sqlsession提交的时候二级缓存中
+          // 先添加到暂存器中，在sqlsession提交的时候才会真正的填充到二级缓存中
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;

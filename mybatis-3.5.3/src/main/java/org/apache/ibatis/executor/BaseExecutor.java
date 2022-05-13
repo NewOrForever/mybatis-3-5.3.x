@@ -53,7 +53,7 @@ public abstract class BaseExecutor implements Executor {
 
   //事务对象
   protected Transaction transaction;
-  //执行权包装对象
+  //执行权包装对象 - 开启了缓存的话这个应该是CachingExecutor
   protected Executor wrapper;
 
   //延时加载队列
@@ -62,7 +62,7 @@ public abstract class BaseExecutor implements Executor {
   protected PerpetualCache localCache;
   //本地输出类型的参数的缓存
   protected PerpetualCache localOutputParameterCache;
-  //mysql全局配置文件
+  //mybatis全局配置文件
   protected Configuration configuration;
   //记录嵌套查询的层级
   protected int queryStack;
@@ -155,6 +155,7 @@ public abstract class BaseExecutor implements Executor {
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
     //获取sql
     BoundSql boundSql = ms.getBoundSql(parameter);
+    // 这个CacheKey的计算和比较还是挺有意思的
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
   }
@@ -226,6 +227,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     CacheKey cacheKey = new CacheKey();
+    // 算hash值
     cacheKey.update(ms.getId());
     cacheKey.update(rowBounds.getOffset());
     cacheKey.update(rowBounds.getLimit());

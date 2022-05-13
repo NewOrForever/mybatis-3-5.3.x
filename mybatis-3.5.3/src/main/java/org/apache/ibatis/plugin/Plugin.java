@@ -41,12 +41,14 @@ public class Plugin implements InvocationHandler {
   }
 
   public static Object wrap(Object target, Interceptor interceptor) {
-    // 获得interceptor配置的@Signature的type
+    // 去解析当前Interceptor要去解析哪个类的哪些方法
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
-    // 当前代理类型
+    // 当前被代理类型
     Class<?> type = target.getClass();
-    // 根据当前代理类型 和 @signature指定的type进行配对， 配对成功则可以代理
+    // 根据当前被代理类型 和 @signature指定的type进行配对， 配对成功则可以代理
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
+    // 被代理类没有实现接口是不会去生成代理对象的 --- 很对啊，jdk动态代理需要被代理对象实现接口
+    // 所以@Signature的type最好还是使用接口类型，这样应该比较规范
     if (interfaces.length > 0) {
       return Proxy.newProxyInstance(
           type.getClassLoader(),
@@ -59,6 +61,7 @@ public class Plugin implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      // 被代理的方法
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
       if (methods != null && methods.contains(method)) {
         return interceptor.intercept(new Invocation(target, method, args));
@@ -72,12 +75,14 @@ public class Plugin implements InvocationHandler {
   private static Map<Class<?>, Set<Method>> getSignatureMap(Interceptor interceptor) {
     Intercepts interceptsAnnotation = interceptor.getClass().getAnnotation(Intercepts.class);
     // issue #251
+    // 拦截器上没有@Intercepts注解就不要配置近<plugin>了，配置了也还是会抛错的
     if (interceptsAnnotation == null) {
       throw new PluginException("No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());
     }
     Signature[] sigs = interceptsAnnotation.value();
     Map<Class<?>, Set<Method>> signatureMap = new HashMap<>();
     for (Signature sig : sigs) {
+      // @Signature中属性：类型、方法名、方法参数类型 -> 指定好了不就知道要去拦截哪个类的哪个方法
       Set<Method> methods = signatureMap.computeIfAbsent(sig.type(), k -> new HashSet<>());
       try {
         Method method = sig.type().getMethod(sig.method(), sig.args());
@@ -86,12 +91,14 @@ public class Plugin implements InvocationHandler {
         throw new PluginException("Could not find method on " + sig.type() + " named " + sig.method() + ". Cause: " + e, e);
       }
     }
+    // Map<要去拦截的类.class, 该类中要被拦截的Method>
     return signatureMap;
   }
 
   private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Method>> signatureMap) {
     Set<Class<?>> interfaces = new HashSet<>();
     while (type != null) {
+      // 被代理类如果没有实现接口的话不会去执行代理
       for (Class<?> c : type.getInterfaces()) {
         if (signatureMap.containsKey(c)) {
           interfaces.add(c);
