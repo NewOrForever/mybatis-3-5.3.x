@@ -131,7 +131,7 @@ public class MapperAnnotationBuilder {
       // 根据mapper接口名获取 xml文件并解析，  解析<mapper></mapper>里面所有东西放到configuration
       // 注解解析也是要去先解析mapper.xml
       loadXmlResource();
-      // 添加已解析的标记
+      // 添加已解析的标记 --- loadedResources.add("com.tuling.mapper.UserMapper")
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
       parseCache();

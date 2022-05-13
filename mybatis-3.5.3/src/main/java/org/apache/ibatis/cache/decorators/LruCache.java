@@ -52,6 +52,7 @@ public class LruCache implements Cache {
       private static final long serialVersionUID = 4267176411845948333L;
 
       //当put进新的值方法返回true时，便移除该map中最老的键和值。
+      //This method is invoked by put and putAll after inserting a new entry into the map
       @Override
       protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
         boolean tooBig = size() > size;
