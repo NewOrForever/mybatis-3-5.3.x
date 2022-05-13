@@ -2,6 +2,8 @@ package com.tuling;
 
 import com.tuling.entity.User;
 import com.tuling.mapper.UserMapper;
+import org.apache.ibatis.annotations.CacheNamespace;
+import org.apache.ibatis.annotations.Property;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;

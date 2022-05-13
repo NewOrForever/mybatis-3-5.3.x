@@ -117,6 +117,7 @@ public class MapperAnnotationBuilder {
   }
 
   public MapperAnnotationBuilder(Configuration configuration, Class<?> type) {
+    // com/tuling/mapper/UserMapper.java (best guess)
     String resource = type.getName().replace('.', '/') + ".java (best guess)";
     this.assistant = new MapperBuilderAssistant(configuration, resource);
     this.configuration = configuration;
@@ -143,6 +144,7 @@ public class MapperAnnotationBuilder {
           // issue #237
           if (!method.isBridge()) {
             // 是不是用了注解  用了注解会将注解解析成MappedStatement
+            // 本质和xml是一样的 ---> 构建MappedStatement
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {
@@ -191,6 +193,10 @@ public class MapperAnnotationBuilder {
     }
   }
 
+  /**
+   * 就是和xml一样的，只不过<cache><cache/>节点变成了@CacheNamespace注解
+   * 拿到各属性封装到Cache中
+   */
   private void parseCache() {
     CacheNamespace cacheDomain = type.getAnnotation(CacheNamespace.class);
     if (cacheDomain != null) {
@@ -305,6 +311,7 @@ public class MapperAnnotationBuilder {
 
   void parseStatement(Method method) {
     Class<?> parameterTypeClass = getParameterType(method);
+    // @Lang
     LanguageDriver languageDriver = getLanguageDriver(method);
     SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
     if (sqlSource != null) {
@@ -404,6 +411,7 @@ public class MapperAnnotationBuilder {
     Class<?>[] parameterTypes = method.getParameterTypes();
     for (Class<?> currentParameterType : parameterTypes) {
       if (!RowBounds.class.isAssignableFrom(currentParameterType) && !ResultHandler.class.isAssignableFrom(currentParameterType)) {
+        // 第一个参数进来 ---> parameterType为第一个参数类型 ---> 第二、三...个参数进来，parameterType就是ParamMap.class
         if (parameterType == null) {
           parameterType = currentParameterType;
         } else {
