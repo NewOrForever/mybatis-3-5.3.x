@@ -195,7 +195,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
        * 根据resultMap处理rsw生成java对象
        */
       handleResultSet(rsw, resultMap, multipleResults, null);
-      rsw = getNextResultSet(stmt); //获取结果集的下一个结果
+      rsw = getNextResultSet(stmt); // 获取结果集的下一个结果（一般就一个结果集这里就是返回null，多结果集对应多个ResultMap）
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
     }
@@ -304,6 +304,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
           DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
           // 处理结果集
           handleRowValues(rsw, resultMap, defaultResultHandler, rowBounds, null);
+          // 将处理好的结果数据添加进来
           multipleResults.add(defaultResultHandler.getResultList());
         } else {
           handleRowValues(rsw, resultMap, resultHandler, rowBounds, null);
@@ -412,7 +413,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       if (shouldApplyAutomaticMappings(resultMap, false)) {
         foundValues = applyAutomaticMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
       }
-      // 通过类型处理器处理映射数据
+      // 通过类型处理器处理映射数据，属性赋值
       foundValues = applyPropertyMappings(rsw, resultMap, metaObject, lazyLoader, columnPrefix) || foundValues;
       foundValues = lazyLoader.size() > 0 || foundValues;
       rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;

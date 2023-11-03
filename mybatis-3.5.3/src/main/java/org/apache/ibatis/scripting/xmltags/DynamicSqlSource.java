@@ -38,12 +38,27 @@ public class DynamicSqlSource implements SqlSource {
    * 这个方法主要做2件事：
    * 1. 解析所有sqlNode  解析成一条完整sql语句
    * 2. 将sql语句中的#{} 替换成问号， 并且把#{}中的参数解析成ParameterMapping （里面包含了typeHandler)
-   * @param parameterObject:参数对象
+   * @param parameterObject: 参数对象，实际调用的时候传递进来的，一些Collection/Array —> 包装成Map
    * @return
    */
   @Override
   public BoundSql getBoundSql(Object parameterObject) {
     DynamicContext context = new DynamicContext(configuration, parameterObject);
+    /**
+     * <MixedSqlNode>
+     *   <StaticTestSqlNode/>
+     *   <TrimSqlNode>
+     *    <MixedSqlNode>
+     *      <IfSqlNode>
+     *        <MixedSqlNode>
+     *          <StaticTestSqlNode/>
+     *        <MixedSqlNode/>
+     *      <IfSqlNode/>
+     *    <MixedSqlNode/>
+     *   <TrimSqlNode/>
+     *   <StaticTestSqlNode/>
+     * <MixedSqlNode/>
+     */
     // 1归 责任链 处理一个个SqlNode   编译出一个完整sql
     // 递归：先执行外层SqlNode的再执行里面的SqlNode，一层一层这样来执行的
     // 最终的sql会拼接到context的StringJoiner中

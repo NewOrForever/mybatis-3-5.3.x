@@ -29,6 +29,8 @@ public class MixedSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    // 这代码还是有意思的，简洁但又不简单，配合上数据结构很简单的就解决了包装+责任链下数据的处理
+    // 每个SqlNode都有这样的apply
     contents.forEach(node -> node.apply(context));
     return true;
   }

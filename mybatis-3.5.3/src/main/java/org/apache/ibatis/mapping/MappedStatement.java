@@ -297,6 +297,7 @@ public final class MappedStatement {
     // 构建BoundSql - 解析select|update|insert|delete时构建的SqlSource是RawSqlSource或是DynamicSqlSource
     // RawSqlSource比较方便直接拿sql就行替换?
     // DynamicSqlSource需要解析SqlNode
+    // TODO ParameterMapping没看懂，后续debug下吧
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings == null || parameterMappings.isEmpty()) {

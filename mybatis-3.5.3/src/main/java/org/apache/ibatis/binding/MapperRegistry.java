@@ -108,6 +108,7 @@ public class MapperRegistry {
         /**
          * 创建一个MapperProxyFactory 把我们的Mapper接口保存到工厂类中， 该工厂用于创建UserMapper的代理对象
          * spring整合的时候就需要的这个代理工厂类来newInstance一个UserMapper的代理类，代理逻辑是MapperProxy
+         * 如果没在这里addMapper那么spring整合的时候getMapper(type)就会拿到空对象 ---> 抛错
          */
         knownMappers.put(type, new MapperProxyFactory<>(type));
         // It's important that the type is added before the parser is run

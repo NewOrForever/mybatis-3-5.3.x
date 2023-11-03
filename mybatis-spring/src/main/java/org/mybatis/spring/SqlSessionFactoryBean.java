@@ -728,6 +728,7 @@ public class SqlSessionFactoryBean
 
     /**
      * 为我们的configuration设置一个环境变量
+     * TODO SpringManagedTransactionFactory在这里赋值 -> mybatis的事务就是SpringManagedTransaction
      */
     targetConfiguration.setEnvironment(new Environment(this.environment,
         this.transactionFactory == null ? new SpringManagedTransactionFactory() : this.transactionFactory,
